@@ -8,7 +8,7 @@ Production: <https://stream-live-notifications.lonanche.workers.dev>, deployed f
 
 ## Deploy to Cloudflare
 
-Builds and deploys run on [Cloudflare Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) from the GitHub repository. Nothing is deployed from a developer machine: every push runs the checks on Cloudflare, and a push to `main` applies pending D1 migrations and deploys the Worker.
+Builds and deploys run on [Cloudflare Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) from the GitHub repository. Nothing is deployed from a developer machine: a push to `main` runs the checks, applies pending D1 migrations, and deploys the Worker. Other branches are not built.
 
 Prerequisites: this repository on GitHub, a Cloudflare account with Workers and D1, and developer applications for Discord and whichever streaming platforms you enable. Everything below is done once in the Cloudflare dashboard and the provider consoles; no local tooling is needed.
 
@@ -16,15 +16,14 @@ Prerequisites: this repository on GitHub, a Cloudflare account with Workers and 
 
 2. Connect the repository. For a new installation use **Workers & Pages → Create → Import a repository**; for an existing Worker use **Worker → Settings → Build → Connect**. The Worker name must stay `stream-live-notifications` to match `wrangler.jsonc`. Use these build settings:
 
-   | Setting                              | Value                           |
-   | ------------------------------------ | ------------------------------- |
-   | Production branch                    | `main`                          |
-   | Build command                        | `npm run verify`                |
-   | Deploy command                       | `npm run deploy`                |
-   | Non-production branch deploy command | `npx wrangler deploy --dry-run` |
-   | Root directory                       | `/`                             |
+   | Setting           | Value            |
+   | ----------------- | ---------------- |
+   | Production branch | `main`           |
+   | Build command     | `npm run verify` |
+   | Deploy command    | `npm run deploy` |
+   | Root directory    | `/`              |
 
-   Workers Builds installs dependencies from `package-lock.json` and uses Node 22 from `.node-version`. `npm run deploy` runs `wrangler d1 migrations apply DB --remote` before `wrangler deploy`, so the build API token needs **D1: Edit** in addition to the default Workers permissions. If the first deploy fails with an authentication error on the migration step, edit the token under **Settings → Build → API token** and add D1 Edit. Non-production branches only run the checks and a dry-run bundle; they never upload a version, because previews would share the production D1 database and `APP_URL`. Enable non-production builds so pull requests get a Cloudflare check status.
+   Workers Builds installs dependencies from `package-lock.json` and uses Node 22 from `.node-version`. `npm run deploy` runs `wrangler d1 migrations apply DB --remote` before `wrangler deploy`, so the build API token needs **D1: Edit** in addition to the default Workers permissions. If the first deploy fails with an authentication error on the migration step, edit the token under **Settings → Build → API token** and add D1 Edit. Disable non-production branch builds under **Settings → Build → Branch control**: preview versions would share the production D1 database and `APP_URL`.
 
 3. Create a [Discord application](https://discord.com/developers/applications). Under OAuth2, add the exact redirect URL `https://YOUR-ORIGIN/auth/callback`. The app uses only the `identify` scope, not bot or server permissions.
 
@@ -54,7 +53,7 @@ You can add a custom domain through the Worker settings. If the origin changes, 
 
 Development happens in [Claude Code on the web](https://code.claude.com/docs/en/claude-code-on-the-web). Open the repository in a cloud session with the default (trusted) network access. The `SessionStart` hook in `.claude/settings.json` runs `npm ci` in cloud sessions, so `npm run verify` works immediately. [`CLAUDE.md`](CLAUDE.md) holds the project conventions the agent follows.
 
-Workflow: a session works on its own branch and opens a pull request. Workers Builds runs `npm run verify` and a dry-run bundle on the branch and reports the result on the pull request. Merging to `main` migrates D1 and deploys. Cloud sessions never need Cloudflare credentials or production secrets; all external APIs are mocked in tests.
+Workflow: a session works on its own branch and opens a pull request. Branches are not built by Cloudflare, so run `npm run verify` in the session before asking for a merge. Merging to `main` runs the checks again, migrates D1, and deploys. Cloud sessions never need Cloudflare credentials or production secrets; all external APIs are mocked in tests.
 
 ### Running the Worker locally
 
@@ -95,7 +94,7 @@ npm run verify
 npx wrangler deploy --dry-run
 ```
 
-`npm run verify` runs syntax checks, Prettier, and the test suite. Tests cover account isolation, cross-origin request rejection, rule CRUD, encrypted destinations, alert limits, live-session deduplication, paused alerts, Discord test cooldowns, retry/error behavior, Twitch challenge/signature verification, Kick RSA verification, and the scheduled monitor. Workers Builds runs the same commands on every push; a failure blocks the production deploy.
+`npm run verify` runs syntax checks, Prettier, and the test suite. Tests cover account isolation, cross-origin request rejection, rule CRUD, encrypted destinations, alert limits, live-session deduplication, paused alerts, Discord test cooldowns, retry/error behavior, Twitch challenge/signature verification, Kick RSA verification, and the scheduled monitor. Workers Builds runs `npm run verify` on every push to `main`; a failure blocks the deploy.
 
 ## Source layout
 
