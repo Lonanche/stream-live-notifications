@@ -5,7 +5,7 @@ Twitch/Kick → Discord notification service on a single Cloudflare Worker with 
 ## Environment
 
 - Development runs in Claude Code cloud sessions. The `SessionStart` hook installs dependencies; if `node_modules` is missing, run `npm ci`.
-- Cloudflare Workers Builds deploys from GitHub: pushes to `main` migrate D1 and deploy, other branches only run checks. Never run `npm run deploy`, `npm run db:remote`, `wrangler deploy` (without `--dry-run`), `wrangler secret`, or `wrangler login` from a session.
+- Cloudflare Workers Builds deploys from GitHub: pushes to `main` run the checks, migrate D1, and deploy. Other branches are not built, so `npm run verify` in the session is the only check before merge. Never run `npm run deploy`, `npm run db:remote`, `wrangler deploy` (without `--dry-run`), `wrangler secret`, or `wrangler login` from a session.
 - No Cloudflare credentials or production secrets exist in sessions, and none are needed. Tests mock every external API and use Miniflare with throwaway D1 databases.
 
 ## Commands
