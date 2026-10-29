@@ -1,0 +1,11 @@
+# Copy to .dev.vars for local development. Set production values with wrangler secret put.
+DISCORD_CLIENT_ID=
+DISCORD_CLIENT_SECRET=
+TWITCH_CLIENT_ID=
+TWITCH_CLIENT_SECRET=
+KICK_CLIENT_ID=
+KICK_CLIENT_SECRET=
+# Generate: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+ENCRYPTION_KEY=
+# Generate a different random string for Twitch callback HMAC verification.
+TWITCH_WEBHOOK_SECRET=

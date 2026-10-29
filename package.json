@@ -1,0 +1,25 @@
+{
+  "name": "stream-live-notifications",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler d1 migrations apply DB --remote && wrangler deploy",
+    "test": "node --test test/*.test.js",
+    "verify": "npm run check && npm run format:check && npm test",
+    "check": "node --check src/index.js && node --check src/auth.js && node --check src/http.js && node --check src/monitor.js && node --check src/discord.js && node --check src/providers.js && node --check src/security.js && node --check public/app.js",
+    "db:local": "wrangler d1 migrations apply DB --local",
+    "db:remote": "wrangler d1 migrations apply DB --remote",
+    "format": "prettier --write src public test package.json wrangler.jsonc README.md CLAUDE.md .claude/settings.json",
+    "format:check": "prettier --check src public test package.json wrangler.jsonc README.md CLAUDE.md .claude/settings.json"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10",
+    "wrangler": "^4.0.0",
+    "miniflare": "5.20261012.1-beta"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

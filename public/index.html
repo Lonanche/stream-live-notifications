@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#101116" />
+    <meta
+      name="description"
+      content="Send your Twitch and Kick live announcements straight to Discord."
+    />
+    <title>Stream Live Notifications — Go live. Let them know.</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Stream Live Notifications home"
+        ><span class="brand-icon">◉</span> stream<span>live</span></a
+      ><span class="header-caption">YOUR STREAM. THEIR SIGNAL.</span>
+      <div id="account"><a class="button discord" href="/auth/login">Connect Discord ↗</a></div>
+    </header>
+    <main>
+      <section id="hero" class="hero">
+        <div>
+          <div class="eyebrow"><span class="signal-dot"></span> THE MOMENT YOU GO LIVE</div>
+          <h1>Hit live.<br />We’ll take it<br /><span>from here.</span></h1>
+          <p>
+            Your next stream deserves a proper entrance.<br />Bring your Twitch and Kick
+            announcements to Discord, automatically.
+          </p>
+          <div class="platform-strip">
+            <span class="platform twitch">▣ Twitch</span><span class="plus">+</span
+            ><span class="platform kick">K Kick</span><span class="flow-arrow">────→</span
+            ><span class="platform">◈ Discord</span>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="orbit">
+            <span class="orbit-label">GO LIVE → GET SEEN</span>
+            <div class="broadcast-symbol"><span>◉</span></div>
+            <span class="orbit-bottom">ONE LESS THING TO THINK ABOUT</span>
+          </div>
+          <div class="hero-note">
+            <span class="signal-dot"></span> Always on. Even when this tab isn’t.
+          </div>
+        </div>
+      </section>
+      <div id="notice" class="notice" role="status" hidden></div>
+      <section class="workspace" aria-labelledby="workspace-title">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">YOUR CONTROL ROOM</div>
+            <h2 id="workspace-title">Make some noise.</h2>
+          </div>
+          <span class="tag">Twitch + Kick</span>
+        </div>
+        <div id="signin-banner" class="signin-banner" hidden>
+          <div>
+            <strong>A little setup. A lot less work.</strong>
+            <p>Sign in with Discord to create and manage your own alerts.</p>
+          </div>
+          <a class="button discord" href="/auth/login">Connect Discord ↗</a>
+        </div>
+        <div class="builder-grid">
+          <form id="alert-form" class="panel builder">
+            <div class="panel-heading">
+              <h3 id="form-title">Create an alert</h3>
+              <span class="step">01 / SETUP</span>
+            </div>
+            <fieldset id="form-fields" disabled>
+              <legend class="sr-only">Alert settings</legend>
+              <label>Streaming platform</label>
+              <div class="platform-choice">
+                <label
+                  ><input type="radio" name="platform" value="twitch" checked /><span
+                    >▣ Twitch</span
+                  ></label
+                ><label
+                  ><input type="radio" name="platform" value="kick" /><span>K Kick</span></label
+                >
+              </div>
+              <label for="channel">Channel name or URL</label
+              ><input
+                id="channel"
+                name="channel"
+                placeholder="e.g. yourchannel"
+                maxlength="120"
+                required
+                autocomplete="off"
+              /><label for="webhook"
+                >Discord webhook URL
+                <span id="webhook-optional" hidden>(leave blank to keep)</span></label
+              ><input
+                id="webhook"
+                name="webhook"
+                type="password"
+                placeholder="https://discord.com/api/webhooks/…"
+                required
+                autocomplete="off"
+              />
+              <p class="field-help">
+                In Discord: Edit Channel → Integrations → Webhooks → New Webhook → Copy Webhook URL.
+              </p>
+              <label for="message">Your announcement</label
+              ><textarea id="message" name="message" rows="3" maxlength="1200" required>
+🔴 {channel} is live on {platform}! Come hang out: {url}</textarea>
+              <div class="tokens">
+                <span>Use:</span><button type="button" data-token="{channel}">{channel}</button
+                ><button type="button" data-token="{platform}">{platform}</button
+                ><button type="button" data-token="{title}">{title}</button
+                ><button type="button" data-token="{game}">{game}</button
+                ><button type="button" data-token="{url}">{url}</button>
+              </div>
+              <p class="field-help">
+                Add @everyone to ping everyone. User and role mentions are disabled. Tests can also
+                ping everyone.
+              </p>
+              <div class="form-actions">
+                <button id="submit" class="button primary" type="submit">
+                  Create alert <span>↗</span></button
+                ><button id="cancel-edit" class="button subtle" type="button" hidden>Cancel</button>
+              </div>
+            </fieldset>
+            <p id="form-error" class="error" role="alert" hidden></p>
+          </form>
+          <aside class="preview-panel">
+            <div class="panel-heading">
+              <h3>A little sneak peek</h3>
+              <span class="step">02 / PREVIEW</span>
+            </div>
+            <div class="discord-window">
+              <div class="discord-channel">
+                # <span>live-now</span><span class="channel-dot">•••</span>
+              </div>
+              <div class="discord-message">
+                <div class="bot-avatar">◉</div>
+                <div class="discord-content">
+                  <div class="bot-name">
+                    Stream Live Notifications <span class="app-badge">APP</span
+                    ><span class="time-label">Today</span>
+                  </div>
+                  <p id="preview-content"></p>
+                </div>
+              </div>
+            </div>
+            <p class="preview-caption">
+              Your message with sample stream details. Discord may show a preview for links. No
+              message is sent here.
+            </p>
+            <div class="privacy-note">
+              <span>◇</span>
+              <p>
+                <strong>Your settings stay yours.</strong><br />Private dashboard. Encrypted webhook
+                URLs. No sharing destinations between accounts.
+              </p>
+            </div>
+          </aside>
+        </div>
+      </section>
+      <section id="alerts-section" class="saved-section" hidden>
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">SET IT. STREAM. REPEAT.</div>
+            <h2>Your alerts <span id="alert-count" class="count">0</span></h2>
+          </div>
+          <button id="refresh" class="button subtle" type="button">↻ Refresh</button>
+        </div>
+        <div id="rules" class="rules" aria-live="polite"></div>
+      </section>
+      <section id="history-section" class="history-section" hidden>
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">THE RECEIPTS</div>
+            <h2>Recent deliveries</h2>
+          </div>
+          <span class="field-help">Latest 30 notifications</span>
+        </div>
+        <div id="history" class="history"></div>
+      </section>
+      <section class="how-it-works">
+        <div>
+          <span>01</span>
+          <h3>Pick your stage.</h3>
+          <p>
+            Add a Twitch or Kick channel. Follow yourself, your friends, or your community’s
+            creators.
+          </p>
+        </div>
+        <div>
+          <span>02</span>
+          <h3>Choose the room.</h3>
+          <p>
+            Paste a webhook for the Discord channel where you want your live announcements to land.
+          </p>
+        </div>
+        <div>
+          <span>03</span>
+          <h3>Go do your thing.</h3>
+          <p>
+            We watch for the next broadcast and send your announcement. You focus on your stream.
+          </p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <a class="brand" href="/">◉ stream<span>live</span></a
+      ><span>Less admin. More airtime.</span><span>Built on Cloudflare.</span>
+    </footer>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>
