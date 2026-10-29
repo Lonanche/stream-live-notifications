@@ -4,6 +4,8 @@ A multi-user Twitch/Kick → Discord notification service built for **your Cloud
 
 Users sign in with Discord, enter any Twitch or Kick channel, paste a Discord channel webhook, and customize the announcement. Each account can add multiple rules, edit messages or destinations, pause/resume, delete, send a test, and inspect delivery history. No streamer OAuth login or Discord bot installation is required. Only the site owner sets up developer applications once.
 
+Production: <https://stream-live-notifications.lonanche.workers.dev>, deployed from `main` by Cloudflare Workers Builds.
+
 ## Deploy to Cloudflare
 
 Builds and deploys run on [Cloudflare Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/) from the GitHub repository. Nothing is deployed from a developer machine: every push runs the checks on Cloudflare, and a push to `main` applies pending D1 migrations and deploys the Worker.
