@@ -18,6 +18,7 @@ Twitch/Kick → Discord notification service on a single Cloudflare Worker with 
 ## Conventions
 
 - Work on a branch and open a pull request; do not push to `main` directly.
+- Start each new feature or fix on its own branch named `<type>/<short-description>`: `feat`, `fix`, `docs` or `chore`, then a few lowercase words joined by hyphens, under 40 characters in total (for example `feat/region-filter`). Create it from the latest `main` and push to it instead of the session's generated `claude/<random-words>` branch. Follow-up work on an open pull request stays on that pull request's branch.
 - Commit messages are one sentence.
 - Comment only when code is genuinely complex.
 - Prettier: single quotes, 100-column width, ES5 trailing commas.
